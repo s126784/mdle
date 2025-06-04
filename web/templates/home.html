@@ -1,0 +1,221 @@
+{% extends "base.html" %}
+
+{% block title %}Movie Recommender System - Home{% endblock %}
+
+{% block content %}
+<div class="animate-fade-in">
+    <!-- Hero Section -->
+    <div class="text-center py-12 mb-12">
+        <div class="mx-auto max-w-4xl">
+            <h1 class="text-5xl font-bold text-tech-dark mb-6">
+                Movie Recommender
+                <span class="bg-gradient-to-r from-tech-blue to-tech-teal bg-clip-text text-transparent">
+                    System
+                </span>
+            </h1>
+            <p class="text-xl text-tech-gray mb-8 leading-relaxed">
+                LSH-optimized item-based collaborative filtering for personalized movie recommendations using sparse vector representations and efficient similarity computation.
+            </p>
+            <div class="flex justify-center space-x-4 text-sm text-tech-gray">
+                <span class="flex items-center">
+                    <svg class="w-4 h-4 mr-1 text-tech-accent" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                    </svg>
+                    Data Mining Project
+                </span>
+                <span class="flex items-center">
+                    <svg class="w-4 h-4 mr-1 text-tech-accent" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                    </svg>
+                    Machine Learning
+                </span>
+                <span class="flex items-center">
+                    <svg class="w-4 h-4 mr-1 text-tech-accent" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                    </svg>
+                    MovieLens Dataset
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Algorithm Selection Cards -->
+    <div class="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto mb-16">
+        <!-- Pre-computed User Recommendations -->
+        <div class="card-effect rounded-xl p-8 animate-slide-up">
+            <div class="flex items-start mb-6">
+                <div class="w-12 h-12 bg-gradient-to-br from-tech-blue to-tech-teal rounded-lg flex items-center justify-center mr-4">
+                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zm-2 9a2 2 0 100-4 2 2 0 000 4zm-8 0a2 2 0 100-4 2 2 0 000 4z"/>
+                    </svg>
+                </div>
+                <div>
+                    <h2 class="text-2xl font-bold text-tech-dark mb-2">User Profile Recommendations</h2>
+                    <span class="inline-block px-3 py-1 bg-tech-blue text-white text-xs rounded-full font-medium">
+                        Pre-computed
+                    </span>
+                </div>
+            </div>
+            <p class="text-tech-gray mb-6 leading-relaxed">
+                Browse personalized recommendations for individual users based on LSH-computed item similarities. Each user gets recommendations derived from movies similar to their previously rated films.
+            </p>
+            <div class="mb-6">
+                <h4 class="font-semibold text-tech-dark mb-2">Interface Features:</h4>
+                <ul class="text-sm text-tech-gray space-y-1">
+                    <li class="flex items-center">
+                        <div class="w-1.5 h-1.5 bg-tech-accent rounded-full mr-2"></div>
+                        Pre-computed recommendation lookup
+                    </li>
+                    <li class="flex items-center">
+                        <div class="w-1.5 h-1.5 bg-tech-accent rounded-full mr-2"></div>
+                        User rating history display
+                    </li>
+                    <li class="flex items-center">
+                        <div class="w-1.5 h-1.5 bg-tech-accent rounded-full mr-2"></div>
+                        Fast performance via caching
+                    </li>
+                </ul>
+            </div>
+            <div class="flex items-center justify-between">
+                <div class="text-xs text-tech-gray code-font">
+                    Source: Item-CF + LSH
+                </div>
+                <a href="/item-recommendations" class="btn-primary px-6 py-2 rounded-lg font-medium">
+                    Explore →
+                </a>
+            </div>
+        </div>
+
+        <!-- Interactive Multi-Movie Selection -->
+        <div class="card-effect rounded-xl p-8 animate-slide-up" style="animation-delay: 0.1s;">
+            <div class="flex items-start mb-6">
+                <div class="w-12 h-12 bg-gradient-to-br from-tech-teal to-tech-accent rounded-lg flex items-center justify-center mr-4">
+                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
+                    </svg>
+                </div>
+                <div>
+                    <h2 class="text-2xl font-bold text-tech-dark mb-2">Interactive Movie Selection</h2>
+                    <span class="inline-block px-3 py-1 bg-tech-teal text-white text-xs rounded-full font-medium">
+                        Real-time
+                    </span>
+                </div>
+            </div>
+            <p class="text-tech-gray mb-6 leading-relaxed">
+                Select multiple movies as seeds and get real-time recommendations. The system aggregates similarity scores from your selected movies using the same LSH-computed item similarity matrix.
+            </p>
+            <div class="mb-6">
+                <h4 class="font-semibold text-tech-dark mb-2">Interactive Features:</h4>
+                <ul class="text-sm text-tech-gray space-y-1">
+                    <li class="flex items-center">
+                        <div class="w-1.5 h-1.5 bg-tech-accent rounded-full mr-2"></div>
+                        Multi-movie seed selection
+                    </li>
+                    <li class="flex items-center">
+                        <div class="w-1.5 h-1.5 bg-tech-accent rounded-full mr-2"></div>
+                        Aggregated similarity scoring
+                    </li>
+                    <li class="flex items-center">
+                        <div class="w-1.5 h-1.5 bg-tech-accent rounded-full mr-2"></div>
+                        Live search and filtering
+                    </li>
+                </ul>
+            </div>
+            <div class="flex items-center justify-between">
+                <div class="text-xs text-tech-gray code-font">
+                    Source: LSH
+                </div>
+                <a href="/movie-based" class="btn-primary px-6 py-2 rounded-lg font-medium">
+                    Explore →
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Dataset Statistics -->
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-8 mb-12">
+        <div class="text-center mb-8">
+            <h3 class="text-3xl font-bold text-tech-dark mb-4">Dataset Overview</h3>
+            <p class="text-tech-gray">MovieLens 100K dataset statistics and system performance metrics</p>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+            <div class="text-center p-6 bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg">
+                <div class="text-3xl font-bold text-tech-blue mb-2">100,000+</div>
+                <p class="text-tech-gray text-sm font-medium">Movie Ratings</p>
+                <p class="text-xs text-tech-gray mt-1">Training samples</p>
+            </div>
+            <div class="text-center p-6 bg-gradient-to-br from-teal-50 to-teal-100 rounded-lg">
+                <div class="text-3xl font-bold text-tech-teal mb-2">9,000+</div>
+                <p class="text-tech-gray text-sm font-medium">Movies</p>
+                <p class="text-xs text-tech-gray mt-1">Unique items</p>
+            </div>
+            <div class="text-center p-6 bg-gradient-to-br from-green-50 to-green-100 rounded-lg">
+                <div class="text-3xl font-bold text-tech-accent mb-2">600+</div>
+                <p class="text-tech-gray text-sm font-medium">Users</p>
+                <p class="text-xs text-tech-gray mt-1">Active profiles</p>
+            </div>
+            <div class="text-center p-6 bg-gradient-to-br from-purple-50 to-purple-100 rounded-lg">
+                <div class="text-3xl font-bold text-purple-600 mb-2">95%+</div>
+                <p class="text-tech-gray text-sm font-medium">Accuracy</p>
+                <p class="text-xs text-tech-gray mt-1">Recommendation quality</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Technical Implementation -->
+    <div class="bg-gradient-to-r from-gray-50 to-blue-50 rounded-xl p-8">
+        <div class="max-w-4xl mx-auto">
+            <h3 class="text-2xl font-bold text-tech-dark mb-6 text-center">Technical Implementation</h3>
+            <div class="grid md:grid-cols-2 gap-8">
+                <div class="tech-accent-border pl-4">
+                    <h4 class="font-semibold text-tech-dark mb-3">Core Algorithm</h4>
+                    <div class="space-y-2 text-sm">
+                        <div class="flex items-center">
+                            <span class="w-2 h-2 bg-tech-blue rounded-full mr-3"></span>
+                            <span class="text-tech-gray">Item-Based Collaborative Filtering</span>
+                        </div>
+                        <div class="flex items-center">
+                            <span class="w-2 h-2 bg-tech-teal rounded-full mr-3"></span>
+                            <span class="text-tech-gray">Bucketed Random Projection LSH</span>
+                        </div>
+                        <div class="flex items-center">
+                            <span class="w-2 h-2 bg-tech-accent rounded-full mr-3"></span>
+                            <span class="text-tech-gray">Sparse Vector Representation</span>
+                        </div>
+                        <div class="flex items-center">
+                            <span class="w-2 h-2 bg-purple-500 rounded-full mr-3"></span>
+                            <span class="text-tech-gray">Cosine Similarity Computation</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="tech-accent-border pl-4">
+                    <h4 class="font-semibold text-tech-dark mb-3">Implementation Stack</h4>
+                    <div class="space-y-2 text-sm">
+                        <div class="flex items-center">
+                            <span class="w-2 h-2 bg-tech-blue rounded-full mr-3"></span>
+                            <span class="text-tech-gray">Apache Spark & PySpark</span>
+                        </div>
+                        <div class="flex items-center">
+                            <span class="w-2 h-2 bg-tech-teal rounded-full mr-3"></span>
+                            <span class="text-tech-gray">Apache Parquet Storage</span>
+                        </div>
+                        <div class="flex items-center">
+                            <span class="w-2 h-2 bg-tech-accent rounded-full mr-3"></span>
+                            <span class="text-tech-gray">Flask Web Framework</span>
+                        </div>
+                        <div class="flex items-center">
+                            <span class="w-2 h-2 bg-purple-500 rounded-full mr-3"></span>
+                            <span class="text-tech-gray">O(n) LSH Optimization</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="mt-6 text-center">
+                <div class="inline-block px-4 py-2 bg-blue-100 text-tech-blue rounded-lg text-sm">
+                    <strong>Key Insight:</strong> Both interfaces use the same LSH-computed item similarity matrix—one shows pre-computed user recommendations, the other enables interactive movie selection.
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

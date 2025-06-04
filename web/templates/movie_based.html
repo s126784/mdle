@@ -1,0 +1,343 @@
+{% extends "base.html" %}
+
+{% block title %}Item-Based Collaborative Filtering - Movie Recommender System{% endblock %}
+
+{% block content %}
+<div class="animate-fade-in">
+    <!-- Header Section -->
+    <div class="text-center mb-8">
+        <h1 class="text-4xl font-bold text-tech-dark mb-4">LSH-Optimized Item-Based Filtering</h1>
+        <p class="text-tech-gray text-lg max-w-3xl mx-auto">
+            Advanced movie similarity computation using Locality Sensitive Hashing on sparse user rating vectors.
+            Each movie is represented as a high-dimensional vector, with LSH enabling efficient O(n) similarity search.
+        </p>
+        <div class="mt-4 inline-block px-4 py-2 bg-teal-100 text-tech-teal rounded-full text-sm font-medium">
+            Algorithm: Bucketed Random Projection LSH
+        </div>
+    </div>
+
+    <form method="POST" class="space-y-8">
+        <!-- Movie Selection Panel -->
+        <div class="card-effect rounded-xl p-6">
+            <div class="flex items-center justify-between mb-6">
+                <div class="flex items-center">
+                    <div class="w-10 h-10 bg-gradient-to-br from-tech-teal to-tech-accent rounded-lg flex items-center justify-center mr-3">
+                        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                        </svg>
+                    </div>
+                    <h2 class="text-xl font-bold text-tech-dark">Select Seed Movies</h2>
+                </div>
+                <div class="flex items-center space-x-3">
+                    <button type="button" onclick="clearAll()"
+                            class="btn-secondary px-4 py-2 text-sm rounded-lg font-medium">
+                        Clear Selection
+                    </button>
+                    <span id="selected-count" class="px-3 py-2 bg-tech-teal text-white rounded-lg text-sm font-semibold">
+                        {{ selected_movies|length }} selected
+                    </span>
+                </div>
+            </div>
+
+            <!-- Search Bar -->
+            <div class="mb-6">
+                <div class="relative">
+                    <input type="text" id="movie-search" placeholder="Search movies by title..."
+                           class="w-full px-4 py-3 pl-10 border rounded-lg focus:ring-2 focus:ring-tech-teal focus:border-transparent text-tech-dark">
+                    <svg class="absolute left-3 top-3.5 h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                    </svg>
+                </div>
+            </div>
+
+            <!-- Selected Movies Display -->
+            {% if selected_movies %}
+            <div class="mb-6 p-4 bg-teal-50 rounded-lg border-l-4 border-tech-teal">
+                <h3 class="font-semibold text-tech-dark mb-3">Selected Seed Movies:</h3>
+                <div class="flex flex-wrap gap-2">
+                    {% for movie in selected_movies %}
+                    <span class="inline-flex items-center px-3 py-1.5 bg-white border border-tech-teal text-tech-teal rounded-full text-sm font-medium">
+                        {{ movie }}
+                        <button type="button" onclick="unselectMovie('{{ movie }}')"
+                                class="ml-2 text-tech-teal hover:text-red-500 transition-colors">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                            </svg>
+                        </button>
+                    </span>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Movie Grid -->
+            <div class="border border-gray-200 rounded-lg">
+                <div class="p-4 bg-gray-50 border-b border-gray-200">
+                    <h4 class="font-medium text-tech-dark">Available Movies</h4>
+                    <p class="text-sm text-tech-gray">Select movies to use as similarity seeds</p>
+                </div>
+                <div class="movie-grid max-h-96 overflow-y-auto p-4">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2" id="movie-list">
+                        {% for movie in all_movies %}
+                        <label class="movie-item flex items-center p-3 hover:bg-gray-50 rounded-lg cursor-pointer transition-all border border-transparent hover:border-tech-teal">
+                            <input type="checkbox" name="selected_movies" value="{{ movie.title }}"
+                                   class="mr-3 w-4 h-4 text-tech-teal rounded focus:ring-tech-teal movie-checkbox"
+                                   {% if movie.title in selected_movies %}checked{% endif %}
+                                   onchange="updateSelectedCount()">
+                            <span class="text-sm text-tech-dark movie-title flex-1">{{ movie.title }}</span>
+                        </label>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Submit Button -->
+            <div class="mt-6 text-center">
+                <button type="submit"
+                        class="btn-primary px-8 py-3 font-semibold rounded-lg shadow-lg">
+                    Generate Recommendations
+                </button>
+                <p class="text-sm text-tech-gray mt-2">Minimum 1 movie required for recommendations</p>
+            </div>
+        </div>
+    </form>
+
+    <!-- Recommendations Results -->
+    {% if movie_recommendations %}
+    <div class="card-effect rounded-xl p-6 animate-slide-up">
+        <div class="flex items-center justify-between mb-6">
+            <div class="flex items-center">
+                <div class="w-10 h-10 bg-gradient-to-br from-tech-accent to-green-600 rounded-lg flex items-center justify-center mr-3">
+                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                    </svg>
+                </div>
+                <h2 class="text-xl font-bold text-tech-dark">Similar Movies</h2>
+            </div>
+            <div class="px-3 py-1 bg-green-100 text-tech-accent text-xs rounded-full font-medium">
+                {{ movie_recommendations|length }} recommendations
+            </div>
+        </div>
+
+        <div class="grid md:grid-cols-2 gap-4 mb-6">
+            {% for rec in movie_recommendations %}
+            <div class="p-4 bg-gradient-to-r from-gray-50 to-blue-50 rounded-lg border border-gray-200 hover:border-tech-teal transition-all hover:shadow-md">
+                <div class="flex items-center justify-between">
+                    <div class="flex-1 min-w-0">
+                        <div class="flex items-center mb-2">
+                            <span class="w-6 h-6 bg-tech-teal text-white rounded-full flex items-center justify-center text-xs font-bold mr-3 flex-shrink-0">
+                                {{ loop.index }}
+                            </span>
+                            <h3 class="font-semibold text-tech-dark truncate">{{ rec.title_j }}</h3>
+                        </div>
+                        <div class="ml-9">
+                            <div class="flex items-center justify-between mb-1">
+                                <span class="text-xs text-tech-gray">Similarity Score</span>
+                                <span class="text-xs font-medium text-tech-dark">{{ "%.3f"|format(rec.score) }}</span>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-2">
+                                <div class="progress-bar h-2 rounded-full transition-all duration-500"
+                                     style="width: {{ ((rec.score / movie_recommendations[0].score * 100) if movie_recommendations[0].score > 0 else 0)|round }}%">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="ml-4 text-tech-accent">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- Algorithm Performance Info -->
+        <div class="p-4 bg-blue-50 rounded-lg border-l-4 border-tech-blue">
+            <h4 class="font-semibold text-tech-blue text-sm mb-3">LSH Algorithm Details</h4>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-xs">
+                <div>
+                    <span class="text-tech-gray">LSH Method:</span>
+                    <div class="font-medium text-tech-dark">Bucketed Random Projection</div>
+                </div>
+                <div>
+                    <span class="text-tech-gray">Vector Space:</span>
+                    <div class="font-medium text-tech-dark">Sparse User Ratings</div>
+                </div>
+                <div>
+                    <span class="text-tech-gray">Similarity Metric:</span>
+                    <div class="font-medium text-tech-dark">Cosine Distance</div>
+                </div>
+                <div>
+                    <span class="text-tech-gray">Complexity:</span>
+                    <div class="font-medium text-tech-dark">O(n) vs O(n²)</div>
+                </div>
+            </div>
+            <div class="mt-3 text-xs text-tech-gray">
+                <strong>Technical:</strong> Movies represented as sparse vectors where dimensions = users and values = ratings.
+                LSH uses random projections to hash similar vectors into same buckets, enabling sub-linear similarity search.
+            </div>
+        </div></div>
+        </div>
+    </div>
+    {% elif request.method == 'POST' and selected_movies %}
+    <div class="card-effect rounded-xl p-8 text-center">
+        <svg class="mx-auto h-16 w-16 text-gray-300 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M9.172 16.172a4 4 0 015.656 0M9 12h6m-6-4h6m2 5.291A7.962 7.962 0 0112 15c-2.34 0-4.463-.686-6.262-1.849m12.524 0A7.962 7.962 0 0112 15c2.34 0 4.463-.686 6.262-1.849M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+        </svg>
+        <h3 class="text-lg font-medium text-tech-gray mb-2">No Similar Movies Found</h3>
+        <p class="text-tech-gray mb-2">Unable to find movies similar to your selection.</p>
+        <p class="text-sm text-tech-gray">Try selecting different movies or expanding your selection.</p>
+    </div>
+    {% endif %}
+
+    <!-- How LSH Works Section -->
+    {% if not movie_recommendations and not (request.method == 'POST' and selected_movies) %}
+    <div class="bg-gradient-to-r from-gray-50 to-blue-50 rounded-xl p-8">
+        <h3 class="text-2xl font-bold text-tech-dark mb-6 text-center">How LSH-Based Item Filtering Works</h3>
+        <div class="grid md:grid-cols-4 gap-4 mb-8">
+            <div class="text-center">
+                <div class="w-16 h-16 bg-gradient-to-br from-tech-blue to-tech-teal rounded-full flex items-center justify-center mx-auto mb-4">
+                    <span class="text-white font-bold text-xl">1</span>
+                </div>
+                <h4 class="font-semibold text-tech-dark mb-2">Vector Creation</h4>
+                <p class="text-sm text-tech-gray">Each movie becomes a sparse vector of user ratings</p>
+            </div>
+            <div class="text-center">
+                <div class="w-16 h-16 bg-gradient-to-br from-tech-teal to-tech-accent rounded-full flex items-center justify-center mx-auto mb-4">
+                    <span class="text-white font-bold text-xl">2</span>
+                </div>
+                <h4 class="font-semibold text-tech-dark mb-2">LSH Hashing</h4>
+                <p class="text-sm text-tech-gray">Random projections group similar movies into buckets</p>
+            </div>
+            <div class="text-center">
+                <div class="w-16 h-16 bg-gradient-to-br from-tech-accent to-green-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <span class="text-white font-bold text-xl">3</span>
+                </div>
+                <h4 class="font-semibold text-tech-dark mb-2">Similarity Search</h4>
+                <p class="text-sm text-tech-gray">Efficient O(n) search within LSH buckets</p>
+            </div>
+            <div class="text-center">
+                <div class="w-16 h-16 bg-gradient-to-br from-green-600 to-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <span class="text-white font-bold text-xl">4</span>
+                </div>
+                <h4 class="font-semibold text-tech-dark mb-2">Recommendations</h4>
+                <p class="text-sm text-tech-gray">Aggregate scores from your selected seed movies</p>
+            </div>
+        </div>
+
+        <!-- Technical Details -->
+        <div class="grid md:grid-cols-2 gap-6 mt-8">
+            <div class="p-4 bg-white rounded-lg border border-gray-200">
+                <h5 class="font-semibold text-tech-dark mb-2">LSH Parameters</h5>
+                <div class="text-sm text-tech-gray space-y-1">
+                    <div><strong>Bucket Length:</strong> 2.0 (similarity threshold)</div>
+                    <div><strong>Hash Tables:</strong> 3 (recall vs performance)</div>
+                    <div><strong>Distance Threshold:</strong> 1.0 (max similarity distance)</div>
+                </div>
+            </div>
+            <div class="p-4 bg-white rounded-lg border border-gray-200">
+                <h5 class="font-semibold text-tech-dark mb-2">Performance Benefits</h5>
+                <div class="text-sm text-tech-gray space-y-1">
+                    <div><strong>Complexity:</strong> O(n) vs O(n²) brute force</div>
+                    <div><strong>Scalability:</strong> Distributed Spark processing</div>
+                    <div><strong>Memory:</strong> Sparse vector optimization</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Movie search functionality
+    document.getElementById('movie-search')?.addEventListener('input', function(e) {
+        const query = e.target.value.toLowerCase();
+        const movieItems = document.querySelectorAll('.movie-item');
+
+        let visibleCount = 0;
+        movieItems.forEach(item => {
+            const title = item.querySelector('.movie-title').textContent.toLowerCase();
+            const isVisible = title.includes(query);
+            item.style.display = isVisible ? 'flex' : 'none';
+            if (isVisible) visibleCount++;
+        });
+
+        // Show message if no results
+        const movieGrid = document.querySelector('.movie-grid');
+        let noResultsMsg = movieGrid.querySelector('.no-results-message');
+
+        if (visibleCount === 0 && query.length > 0) {
+            if (!noResultsMsg) {
+                noResultsMsg = document.createElement('div');
+                noResultsMsg.className = 'no-results-message text-center py-8 text-tech-gray';
+                noResultsMsg.innerHTML = `
+                    <svg class="mx-auto h-12 w-12 text-gray-300 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                    </svg>
+                    <p>No movies found matching "${query}"</p>
+                `;
+                movieGrid.appendChild(noResultsMsg);
+            }
+        } else if (noResultsMsg) {
+            noResultsMsg.remove();
+        }
+    });
+
+    // Update selected count
+    function updateSelectedCount() {
+        const countEl = document.getElementById('selected-count');
+        if (countEl) {
+            const checkedBoxes = document.querySelectorAll('input[name="selected_movies"]:checked');
+            countEl.textContent = checkedBoxes.length + ' selected';
+
+            // Update button state
+            const submitBtn = document.querySelector('button[type="submit"]');
+            if (submitBtn) {
+                submitBtn.disabled = checkedBoxes.length === 0;
+                submitBtn.classList.toggle('opacity-50', checkedBoxes.length === 0);
+            }
+        }
+    }
+
+    // Clear all selections
+    function clearAll() {
+        const checkboxes = document.querySelectorAll('input[name="selected_movies"]');
+        checkboxes.forEach(checkbox => checkbox.checked = false);
+        updateSelectedCount();
+    }
+
+    // Unselect specific movie
+    function unselectMovie(movieTitle) {
+        const checkbox = document.querySelector(`input[name="selected_movies"][value="${movieTitle.replace(/"/g, '\\"')}"]`);
+        if (checkbox) {
+            checkbox.checked = false;
+            updateSelectedCount();
+        }
+        // Submit form to update server state
+        setTimeout(() => {
+            document.querySelector('form').submit();
+        }, 100);
+    }
+
+    // Add event listeners to checkboxes
+    document.querySelectorAll('.movie-checkbox').forEach(checkbox => {
+        checkbox.addEventListener('change', updateSelectedCount);
+    });
+
+    // Initialize on page load
+    document.addEventListener('DOMContentLoaded', function() {
+        updateSelectedCount();
+
+        // Add smooth scrolling to recommendations when they appear
+        const recommendations = document.querySelector('.animate-slide-up');
+        if (recommendations) {
+            setTimeout(() => {
+                recommendations.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }, 300);
+        }
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Movie Recommender System{% endblock %}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    animation: {
+                        'fade-in': 'fadeIn 0.5s ease-in-out',
+                        'slide-up': 'slideUp 0.3s ease-out',
+                    },
+                    colors: {
+                        'tech-blue': '#2563EB',      // Professional blue
+                        'tech-teal': '#0891B2',      // Teal accent
+                        'tech-gray': '#374151',      // Dark gray
+                        'tech-light': '#F3F4F6',     // Light background
+                        'tech-dark': '#111827',      // Dark text
+                        'tech-border': '#D1D5DB',    // Border gray
+                        'tech-accent': '#059669',    // Green accent
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        @keyframes slideUp {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        body {
+            font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background-color: #F9FAFB;
+            color: #111827;
+            line-height: 1.6;
+        }
+        .navbar-bg {
+            background: linear-gradient(135deg, #1E293B 0%, #334155 100%);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+        .card-effect {
+            background: white;
+            border: 1px solid #E5E7EB;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+        .card-effect:hover {
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            transform: translateY(-2px);
+        }
+        .footer-bg {
+            background-color: #374151;
+            color: #D1D5DB;
+        }
+
+        /* Form elements styling */
+        select, input[type="text"], input[type="checkbox"] {
+            background-color: white;
+            border: 1px solid #D1D5DB;
+            color: #111827;
+            transition: all 0.2s ease;
+        }
+        input[type="checkbox"]:checked {
+            background-color: #2563EB;
+            border-color: #2563EB;
+        }
+        input[type="checkbox"]:focus, select:focus, input[type="text"]:focus {
+            outline: none;
+            border-color: #2563EB;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        /* Button styles */
+        .btn-primary {
+            background: linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%);
+            color: white;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 4px rgba(37, 99, 235, 0.2);
+        }
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #1D4ED8 0%, #1E40AF 100%);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(37, 99, 235, 0.3);
+        }
+        .btn-secondary {
+            border: 1px solid #0891B2;
+            color: #0891B2;
+            background: white;
+            transition: all 0.3s ease;
+        }
+        .btn-secondary:hover {
+            background-color: #0891B2;
+            color: white;
+        }
+
+        /* Panel styling */
+        .panel {
+            background: white;
+            border: 1px solid #E5E7EB;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Tech-themed accents */
+        .tech-accent-border {
+            border-left: 4px solid #2563EB;
+        }
+        .code-font {
+            font-family: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
+        }
+
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #F3F4F6;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #9CA3AF;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #6B7280;
+        }
+
+        /* Rating stars */
+        .star-filled {
+            color: #F59E0B;
+        }
+        .star-empty {
+            color: #D1D5DB;
+        }
+
+        /* Progress bars */
+        .progress-bar {
+            background: linear-gradient(90deg, #2563EB 0%, #0891B2 100%);
+        }
+    </style>
+</head>
+<body class="min-h-screen">
+    <nav class="navbar-bg">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <a href="/" class="text-white text-xl font-bold flex items-center">
+                        <svg class="w-8 h-8 mr-3 text-tech-teal" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zm0 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V8zm0 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1v-2z" clip-rule="evenodd"/>
+                        </svg>
+                        Movie Recommender System
+                    </a>
+                </div>
+                <div class="flex space-x-6 items-center">
+                    <a href="/" class="text-gray-200 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors">
+                        Home
+                    </a>
+                    <a href="/item-recommendations" class="text-gray-200 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors">
+                        User-Based
+                    </a>
+                    <a href="/movie-based" class="text-gray-200 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors">
+                        Item-Based
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="footer-bg mt-16">
+        <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8 text-center">
+            <p class="text-sm">&copy; 2025 Movie Recommender System - Data Mining Course Project</p>
+        </div>
+    </footer>
+
+    {% block scripts %}{% endblock %}
+</body>
+</html>
