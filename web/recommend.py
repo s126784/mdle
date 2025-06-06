@@ -1,7 +1,7 @@
 import pandas as pd
 
-ratings = pd.read_csv("../datasets/100k/ratings.csv")
-movies = pd.read_csv("../datasets/100k/movies.csv")
+ratings = pd.read_csv("./ds/ratings.csv")
+movies = pd.read_csv("./ds/movies.csv")
 
 # Load precomputed LSH recommendations
 recs_df = pd.read_parquet("./cache/user_recommendations.parquet")
